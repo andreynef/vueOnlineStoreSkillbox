@@ -30,7 +30,7 @@
         <ul class="colors">
           <li class="colors__item" v-for="item in colors" :key="item.id" @click="clickColor(item.color)">
             <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color">
+              <input class="colors__radio " type="radio" name="color" :checked="currentColor">
               <span :style='{ backgroundColor: `${item.color}` }' class="colors__value"></span>
             </label>
           </li>
@@ -53,7 +53,7 @@
   import colors from "../data/colors";
 
 export default {
-  data() {//состояние чтобы потом кнопкой применить фильтрацию
+  data() {//внутреннее состояние компонента Aside. Чтобы потом 1 кнопкой отправить действие на обновление осн стейта App.
     return {
       currentPriceFrom:0,
       currentPriceTo:0,
@@ -99,6 +99,7 @@ export default {
       this.$emit('update:priceTo', 0);
       this.$emit('update:categoryId', 0);
       this.$emit('update:color', undefined);
+      this.currentColor = undefined;
     },
   },
   // currentPriceFrom: {//если менять список моментально и не ждать нажатия кнопки отправить то исп геттер и сеттер. А так юзаем стейт передачу 1 кнопкой сабмит.
