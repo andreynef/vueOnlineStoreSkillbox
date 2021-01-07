@@ -30,7 +30,7 @@
         <ul class="colors">
           <li class="colors__item" v-for="item in colors" :key="item.id" @click="clickColor(item.color)">
             <label class="colors__label">
-              <input class="colors__radio " type="radio" name="color" :checked="currentColor">
+              <input class="colors__radio sr-only" type="radio" name="color" :checked="currentColor">
               <span :style='{ backgroundColor: `${item.color}` }' class="colors__value"></span>
             </label>
           </li>
