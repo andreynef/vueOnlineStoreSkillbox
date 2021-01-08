@@ -12,7 +12,7 @@
       <ProductFilter :price-from.sync="filterPriceFrom" :price-to.sync="filterPriceTo" :category-id.sync="filterCategoryId" :color.sync="filterColor"/>
       <section class="catalog">
         <!--   проброс параметров в пропсы через v-bind:-->
-        <ProductList :products="products" @gotoPageFromItem="(pageName, pageParams) => $emit('gotoPageFromItem',pageName, pageParams)"/>
+        <ProductList :products="products"/>
         <BasePagination v-model="page" :total-items="countProducts" :per-page="productsPerPage"/>
       </section>
     </div>

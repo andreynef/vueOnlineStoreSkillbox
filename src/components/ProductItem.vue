@@ -1,7 +1,8 @@
 <template>
   <li class="catalog__item">
-    <a class="catalog__pic" href="#">
-      <img :src="product.image" :alt="product.title" @click.prevent="$emit('gotoPageFromItem', 'product', {id: product.id})">
+    <a class="catalog__pic" href="#" @click.prevent="gotoPageFromItem('product', {id: product.id})">
+<!--      <img :src="product.image" :alt="product.title" @click.prevent="$emit('gotoPageFromItem', 'product', {id: product.id})">-->
+      <img :src="product.image" :alt="product.title" >
     </a>
 
     <h3 class="catalog__title">
@@ -11,7 +12,7 @@
     </h3>
 
     <span class="catalog__price">
-      {{product.price}} ₽
+      {{product.price | numberFormat}} ₽
     </span>
 
     <ul class="colors colors--black">
@@ -26,8 +27,16 @@
 </template>
 
 <script>
+import gotoPageFromItem from "../helpers/gotoPage";
+import numberFormat from "../helpers/numberFormat";
 
 export default {
   props: ['product'],
+  methods: {
+    gotoPageFromItem
+  },
+  filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed.
+    numberFormat,
+  },
 };
 </script>

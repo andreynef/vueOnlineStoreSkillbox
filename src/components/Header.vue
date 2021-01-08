@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header__wrapper container">
-      <span class="header__info">Каталог</span>
+      <span class="header__info myClass" @click.prevent="gotoPageFromItem('jhjdhf')">Go to "jhfdff" page</span>
 
       <a class="header__logo" href="#">
         <img src="img/svg/logo-tech.svg" alt="Лого Технозавррр" width="190" height="33">
@@ -22,7 +22,22 @@
 </template>
 
 <script>
-export default {
-  name: 'Header',
-};
+  import gotoPageFromItem from '../helpers/gotoPage';
+
+  export default {
+    methods: {
+      gotoPageFromItem
+    },
+
+  };
 </script>
+
+<style>
+  .myClass {
+    color: red;
+  }
+  .myClass:hover {
+    cursor: pointer;
+    border: 1px solid red;
+  }
+</style>
