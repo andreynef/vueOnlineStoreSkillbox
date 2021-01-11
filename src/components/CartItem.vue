@@ -27,7 +27,7 @@
     </div>
 
     <b class="product__price">
-      {{numberFormat(item.product.price * item.amount)}} ₽
+      {{(item.product.price * item.amount) | numberFormat}} ₽
     </b>
 
     <button class="product__del button-del" type="button" aria-label="Удалить товар из корзины" @click.prevent="deleteProduct(item.productId)">
@@ -43,7 +43,7 @@ import numberFormat from "../helpers/numberFormat";
 import {mapMutations} from "vuex";
 
 export default {
-  filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed.
+  filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed. А если просто html {{numberFormat(value)}} то б ошибка на нереактивность.
     numberFormat,
   },
   props: ['item'],
