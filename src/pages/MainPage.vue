@@ -21,7 +21,7 @@
 
 <script>
 
-  import ProductList from "./../components/ProductList.vue";//
+  import ProductList from "./../components/ProductList.vue";
   import Header from './../components/Header.vue';
   import Footer from './../components/Footer.vue';
   import products from './../data/products';

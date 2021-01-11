@@ -2,7 +2,7 @@ export default [
   {
     id: 11,
     title: '120 ГБ SSD-накопитель A-Data SU650 [ASU650SS-120GT-R]',
-    price: 1399,
+    price: '1399',
     image: 'https://c.dns-shop.ru/thumb/st4/fit/320/250/9f0811598a054e064ac25392a2a89e6b/6bbb853e207d7448fa7921a4bc1c0c9a8a30687685cc50a933b96a66b49d4a90.jpg',
     categoryId: 1,
     colors: ['green','black','yellow'],
@@ -10,7 +10,7 @@ export default [
   {
     id: 12,
     title: '120 ГБ SSD-накопитель SiliconPower Slim S55 [SP120GBSS3S55S25]',
-    price: 1399,
+    price: undefined,
     image: 'https://c.dns-shop.ru/thumb/st1/fit/500/500/a99fd5dbc4231cfaed6e62a88fce37eb/29cf1e0bbc3db2373b5b94b1d03297f8f2ac1dd20686155d5a2798afc4a0e3d5.jpg',
     categoryId: 2,
     colors: ['blue','red'],

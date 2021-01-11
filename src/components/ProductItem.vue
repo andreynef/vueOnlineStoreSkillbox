@@ -1,9 +1,9 @@
 <template>
   <li class="catalog__item">
-    <a class="catalog__pic" href="#" @click.prevent="gotoPageFromItem('product', {id: product.id})">
-<!--      <img :src="product.image" :alt="product.title" @click.prevent="$emit('gotoPageFromItem', 'product', {id: product.id})">-->
+    <router-link class="catalog__pic" :to="{name:'product', params:{id:product.id}}">
+<!--    <a class="catalog__pic" href="#" @click.prevent="gotoPageFromItem('product', {id: product.id})">-->
       <img :src="product.image" :alt="product.title" >
-    </a>
+    </router-link>
 
     <h3 class="catalog__title">
       <a href="#">
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import gotoPageFromItem from "../helpers/gotoPage";
+import gotoPageFromItem from "@/helpers/gotoPage";
 import numberFormat from "../helpers/numberFormat";
 
 export default {

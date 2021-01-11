@@ -3,14 +3,15 @@
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="#" @click.prevent="gotoPageFromItem('main')">
+          <router-link :to="{name:'main'}" class="breadcrumbs__link">
             Каталог
-          </a>
+          </router-link>
         </li>
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="#" @click.prevent="gotoPageFromItem('main')">
+          <router-link :to="{name:'main'}" class="breadcrumbs__link">
+<!--          <a class="breadcrumbs__link" href="#" @click.prevent="gotoPageFromItem('main')">-->
             {{category.title}}
-          </a>
+          </router-link>
         </li>
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link">
@@ -55,7 +56,7 @@
           {{product.title}}
         </h2>
         <div class="item__form">
-          <form class="form" action="#" method="POST">
+          <form class="form" action="#" method="POST" @submit.prevent="addToCart">
             <b class="item__price">
               {{product.price | numberFormat}} ₽
             </b>
@@ -112,7 +113,7 @@
                   </svg>
                 </button>
 
-                <input type="text" value="1" name="count">
+                <input type="text" v-model.number="productAmount">
 
                 <button type="button" aria-label="Добавить один товар">
                   <svg width="12" height="12" fill="currentColor">
@@ -183,29 +184,36 @@
 </template>
 
 <script>
-  import products from '../data/products';
-  import categories from '../data/categories';
-  import gotoPageFromItem from "../helpers/gotoPage";
-  import numberFormat from "../helpers/numberFormat";
+  import products from '@/data/products';
+  import categories from '@/data/categories';
+  import gotoPageFromItem from "@/helpers/gotoPage";
+  import numberFormat from "@/helpers/numberFormat";
 
   export default {
-    props:['pageParams'],//=':page-params' на входе.
+    // props:['pageParams'],//=':page-params' на входе.
+    data(){
+      return {
+        productAmount: 1,
+      }
+    },
     filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed.
       numberFormat,
     },
     computed: {
       product() {
-        return products.find(product => product.id === this.pageParams.id);
+        // return products.find(product => product.id === this.pageParams.id);
+        return products.find(product => product.id === +this.$route.params.id);//знак + приводит значение в число. Id это число.
       },
       category() {
         return categories.find(category => category.id === this.product.categoryId);
       },
-      colors() {
-        return products.find(item => category.id === this.product.categoryId);
-      },
     },
     methods: {
-      gotoPageFromItem
+      gotoPageFromItem,
+      addToCart(){
+        const itemToAdd = {productId: this.product.id, amount: this.productAmount};
+        this.$store.commit('addProductToCart', itemToAdd);//= dispatch action
+      },
     },
   };
 </script>
