@@ -3,16 +3,18 @@
     <Header/>
     <router-view/>
     <Footer/>
+    <AppTheory/>
   </div>
 </template>
 
 <script>
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AppTheory from "./AppTheory";
 
 
 export default {
-  components: {Header, Footer},
+  components: {AppTheory, Header, Footer},
 };
 </script>
 

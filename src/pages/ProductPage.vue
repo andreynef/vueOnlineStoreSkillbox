@@ -106,22 +106,7 @@
             </fieldset>
 
             <div class="item__row">
-              <div class="form__counter">
-                <button type="button" aria-label="Убрать один товар">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-minus"></use>
-                  </svg>
-                </button>
-
-                <input type="text" v-model.number="productAmount">
-
-                <button type="button" aria-label="Добавить один товар">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-plus"></use>
-                  </svg>
-                </button>
-              </div>
-
+              <Counter :amount.sync="productAmount"/>
               <button class="button button--primery" type="submit">
                 В корзину
               </button>
@@ -188,8 +173,10 @@
   import categories from '@/data/categories';
   import gotoPageFromItem from "@/helpers/gotoPage";
   import numberFormat from "@/helpers/numberFormat";
+  import Counter from "../components/Counter";
 
   export default {
+    components: {Counter},
     // props:['pageParams'],//=':page-params' на входе.
     data(){
       return {
@@ -209,11 +196,14 @@
       },
     },
     methods: {
-      gotoPageFromItem,
+      gotoPageFromItem,//вынес в хелперы, глоб видимость дабы избежать дриллинга. gotoPageFromItem(pageName, pageParams)
       addToCart(){
         const itemToAdd = {productId: this.product.id, amount: this.productAmount};
         this.$store.commit('addProductToCart', itemToAdd);//= dispatch action
       },
     },
+    watch: {
+
+    }
   };
 </script>

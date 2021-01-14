@@ -11,19 +11,20 @@
               </span>
 
     <div class="product__counter form__counter">
-      <button type="button" aria-label="Убрать один товар">
-        <svg width="10" height="10" fill="currentColor">
-          <use xlink:href="#icon-minus"></use>
-        </svg>
-      </button>
+<!--      <button type="button" aria-label="Убрать один товар">-->
+<!--        <svg width="10" height="10" fill="currentColor">-->
+<!--          <use xlink:href="#icon-minus"></use>-->
+<!--        </svg>-->
+<!--      </button>-->
 
-      <input type="text" v-model.number="amount" name="count">
+<!--      <input type="text" v-model.number="amount" name="count">-->
 
-      <button type="button" aria-label="Добавить один товар">
-        <svg width="10" height="10" fill="currentColor">
-          <use xlink:href="#icon-plus"></use>
-        </svg>
-      </button>
+<!--      <button type="button" aria-label="Добавить один товар">-->
+<!--        <svg width="10" height="10" fill="currentColor">-->
+<!--          <use xlink:href="#icon-plus"></use>-->
+<!--        </svg>-->
+<!--      </button>-->
+      <Counter :amount.sync="amount"/>
     </div>
 
     <b class="product__price">
@@ -41,18 +42,20 @@
 <script>
 import numberFormat from "../helpers/numberFormat";
 import {mapMutations} from "vuex";
+import Counter from "./Counter";
 
 export default {
+  components: {Counter},
   filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed. А если просто html {{numberFormat(value)}} то б ошибка на нереактивность.
     numberFormat,
   },
-  props: ['item'],
+  props: ['item'],//amount, product, productId
   computed: {
-    amount: {//изменение инпута через сторовскую мутацию. Иначе никак. Правило стора.
+    amount: {
       get(){
         return this.item.amount;
       },
-      set(value){
+      set(value){//изменение инпута через сторовскую мутацию. Иначе никак. Правило стора.
         this.$store.commit('updateCartProductAmount', {productId:this.item.productId, amount: value});//= dispatch action
       }
     }

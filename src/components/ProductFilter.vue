@@ -1,6 +1,6 @@
 <template>
   <aside class="filter">
-    <h2 class="filter__title">Фильтры</h2>
+    <h2 class="filter__title">Фильтрыdsdsd</h2>
 
     <form class="filter__form form" action="#" method="get" @submit.prevent="submit">
       <fieldset class="form__block">
@@ -27,16 +27,16 @@
 
       <fieldset class="form__block">
         <legend class="form__legend">Цвет ({{currentColor || 'all'}})</legend>
-        <ul class="colors">
-          <li class="colors__item" v-for="item in colors" :key="item.id" @click="clickColor(item.color)">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" :checked="currentColor">
-              <span :style='{ backgroundColor: `${item.color}` }' class="colors__value"></span>
-            </label>
-          </li>
-        </ul>
+<!--        <ul class="colors">-->
+<!--          <li class="colors__item" v-for="item in colors" :key="item.id" @click="clickColor(item.color)">-->
+<!--            <label class="colors__label">-->
+<!--              <input class="colors__radio sr-only" type="radio" name="color" :checked="currentColor">-->
+<!--              <span :style='{ backgroundColor: `${item.color}` }' class="colors__value"></span>-->
+<!--            </label>-->
+<!--          </li>-->
+<!--        </ul>-->
+        <ColorList :colors-arr="colors" :choosen-color.sync="currentColor"/>
       </fieldset>
-
       <button class="filter__submit button button--primery" type="submit">
         Применить
       </button>
@@ -51,8 +51,10 @@
 
   import categories from "../data/categories";
   import colors from "../data/colors";
+  import ColorList from "./ColorList";
 
 export default {
+  components: {ColorList},
   data() {//внутреннее состояние компонента Aside. Чтобы потом 1 кнопкой отправить действие на обновление осн стейта App.
     return {
       currentPriceFrom:0,
@@ -70,7 +72,7 @@ export default {
       return colors;
     },
   },
-  watch: {//можно сбрасывать стейт вручную в ресете, переназначая на 0, либо исп watch (слежка за пропсами)
+  watch: {//можно сбрасывать стейт вручную в ресете, переназначая на 0, но можно и исп watch (слежка за пропсами). Значение меняется - то и выполняется.
     priceFrom(value){
       this.currentPriceFrom = value;
     },
