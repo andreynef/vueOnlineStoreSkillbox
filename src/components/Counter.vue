@@ -1,8 +1,18 @@
 <template>
   <div class="form__counter">
-    <button type="button" aria-label="Убрать один товар" @click="decrement">&darr;</button>
+    <button
+      type="button"
+      aria-label="Убрать один товар"
+      @click="updateAmount(currentAmount-1)"
+    >&darr;</button>
+
     <input type="text" v-model.number="currentAmount">
-    <button type="button" aria-label="Добавить один товар" @click="increment">&uarr;</button>
+
+    <button
+      type="button"
+      aria-label="Добавить один товар"
+      @click="updateAmount(currentAmount+1)"
+    >&uarr;</button>
   </div>
 </template>
 
@@ -11,12 +21,9 @@
   export default {
     props:['amount'],//=':amount' на входе.
     methods: {
-      increment (){
-        this.$emit('update:amount', this.amount+1);
-      },
-      decrement (){
-        if(this.amount!==0){
-          this.$emit('update:amount', this.amount-1);
+      updateAmount(value){
+        if(value>=0){
+          this.$emit(`update:amount`, value);
         }
       },
     },

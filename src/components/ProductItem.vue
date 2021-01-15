@@ -14,26 +14,25 @@
     <span class="catalog__price">
       {{product.price | numberFormat}} ₽
     </span>
-
-    <ul class="colors colors--black">
-      <li class="colors__item" v-for="color in product.colors">
-        <label class="colors__label">
-          <input class="colors__radio sr-only" type="radio" value="color">
-          <span :style="{ backgroundColor: `${color}` }" class="colors__value"></span>
-        </label>
-      </li>
-    </ul>
+    <ColorList :colors-arr="product.colors" :picked-color.sync="currentColor"/>
   </li>
 </template>
 
 <script>
-import gotoPageFromItem from "@/helpers/gotoPage";
 import numberFormat from "../helpers/numberFormat";
+import ColorList from "./ColorList";
+import gotoPageFromItem from "../helpers/gotoPage";
 
 export default {
+  components: {ColorList},
   props: ['product'],
+  data(){//локальное состояние
+    return {
+      currentColor: undefined,
+    }
+  },
   methods: {
-    gotoPageFromItem
+    gotoPageFromItem,
   },
   filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed.
     numberFormat,

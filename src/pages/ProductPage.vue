@@ -63,15 +63,7 @@
 
             <fieldset class="form__block">
               <legend class="form__legend">Цвет:</legend>
-              <ul class="colors">
-                <li class="colors__item" v-for="color in product.colors">
-                  <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-item">
-                    <span class="colors__value" :style="{ backgroundColor: `${color}` }">
-                    </span>
-                  </label>
-                </li>
-              </ul>
+              <ColorList :colors-arr="product.colors" :picked-color.sync="currentColor"/>
             </fieldset>
 
             <fieldset class="form__block">
@@ -174,13 +166,15 @@
   import gotoPageFromItem from "@/helpers/gotoPage";
   import numberFormat from "@/helpers/numberFormat";
   import Counter from "../components/Counter";
+  import ColorList from "../components/ColorList";
 
   export default {
-    components: {Counter},
+    components: {Counter, ColorList},
     // props:['pageParams'],//=':page-params' на входе.
     data(){
       return {
         productAmount: 1,
+        currentColor:undefined,
       }
     },
     filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed.
@@ -189,11 +183,14 @@
     computed: {
       product() {
         // return products.find(product => product.id === this.pageParams.id);
-        return products.find(product => product.id === +this.$route.params.id);//знак + приводит значение в число. Id это число.
+        return products.find(item => item.id === +this.$route.params.id);//знак + приводит значение в число. Id это число.
       },
       category() {
-        return categories.find(category => category.id === this.product.categoryId);
+        return categories.find(item => item.id === this.product.categoryId);
       },
+      pickedColor() {
+        return this.currentColor;
+      }
     },
     methods: {
       gotoPageFromItem,//вынес в хелперы, глоб видимость дабы избежать дриллинга. gotoPageFromItem(pageName, pageParams)
@@ -202,8 +199,15 @@
         this.$store.commit('addProductToCart', itemToAdd);//= dispatch action
       },
     },
-    watch: {
-
-    }
+    watch: {//мЗначение меняется - то и выполняется.
+      '$route.params.id'(){
+        if(!this.product){
+          this.$router.push({name:'notFound'})
+        }
+      },
+      color(value){
+        this.currentColor = value;
+      },
+    },
   };
 </script>

@@ -27,15 +27,7 @@
 
       <fieldset class="form__block">
         <legend class="form__legend">Цвет ({{currentColor || 'all'}})</legend>
-<!--        <ul class="colors">-->
-<!--          <li class="colors__item" v-for="item in colors" :key="item.id" @click="clickColor(item.color)">-->
-<!--            <label class="colors__label">-->
-<!--              <input class="colors__radio sr-only" type="radio" name="color" :checked="currentColor">-->
-<!--              <span :style='{ backgroundColor: `${item.color}` }' class="colors__value"></span>-->
-<!--            </label>-->
-<!--          </li>-->
-<!--        </ul>-->
-        <ColorList :colors-arr="colors" :choosen-color.sync="currentColor"/>
+        <ColorList :colors-arr="colors" :picked-color.sync="currentColor"/>
       </fieldset>
       <button class="filter__submit button button--primery" type="submit">
         Применить
@@ -68,11 +60,11 @@ export default {
     categories() {
       return categories;
     },
-    colors() {
+    colors() {//импортируем весь теоретический список возможных цветов из 'стора' и передаем дальше как вычисляемое значение. Напрямик с импорта нельзя.
       return colors;
     },
   },
-  watch: {//можно сбрасывать стейт вручную в ресете, переназначая на 0, но можно и исп watch (слежка за пропсами). Значение меняется - то и выполняется.
+  watch: {//исп watch (слежка за пропсами). Проп меняется - то и выполняется.
     priceFrom(value){
       this.currentPriceFrom = value;
     },
@@ -87,9 +79,6 @@ export default {
     },
   },
   methods: {
-    clickColor(color){
-      this.currentColor = color;
-    },
     submit(){
       this.$emit('update:priceFrom', this.currentPriceFrom);
       this.$emit('update:priceTo', this.currentPriceTo);
