@@ -48,11 +48,13 @@
 export default {
   components: {ColorList},
   data() {//внутреннее состояние компонента Aside. Чтобы потом 1 кнопкой отправить действие на обновление осн стейта App.
-    return {
-      currentPriceFrom:0,
-      currentPriceTo:0,
-      currentCategoryId:0,
-      currentColor:undefined,
+    return {//данные кот отображаются в компоненте
+      currentFilterState: {//состояние как 1 обьект для watch одним методом
+        currentPriceFrom:0,
+        currentPriceTo:0,
+        currentCategoryId:0,
+        currentColor:undefined,
+      }
     }
   },
   props:['priceFrom','priceTo', 'categoryId', 'color'],
@@ -64,19 +66,36 @@ export default {
       return colors;
     },
   },
-  watch: {//исп watch (слежка за пропсами). Проп меняется - то и выполняется.
-    priceFrom(value){
-      this.currentPriceFrom = value;
+  watch: {//слежка за пропсами. Проп меняется - то и выполняется.
+    currentFilterState: {
+      handler: function(value, oldValue){//handler,deep - завод.
+        if(this.currentFilterState.currentPriceFrom !== oldValue){
+          this.currentFilterState.currentPriceFrom = value;
+        }
+        if(this.currentFilterState.currentPriceTo !== oldValue){
+          this.currentFilterState.currentPriceTo = value;
+        }
+        if(this.currentFilterState.currentCategoryId !== oldValue){
+          this.currentFilterState.currentCategoryId = value;
+        }
+        if(this.currentFilterState.currentColor !== oldValue){
+          this.currentFilterState.currentColor = value;
+        }
+      },
+      deep:true//флаг,включает глубокую вложенность.
     },
-    priceTo(value){
-      this.currentPriceTo = value;
-    },
-    categoryId(value){
-      this.currentCategoryId = value;
-    },
-    color(value){
-      this.currentColor = value;
-    },
+    // priceFrom(value){
+    //   this.currentPriceFrom = value
+    // },
+    // priceTo(value){
+    //   this.currentPriceTo = value;
+    // },
+    // categoryId(value){
+    //   this.currentCategoryId = value;
+    // },
+    // color(value){
+    //   this.currentColor = value;
+    // },
   },
   methods: {
     submit(){
@@ -93,7 +112,7 @@ export default {
       this.currentColor = undefined;
     },
   },
-  // currentPriceFrom: {//если менять список моментально и не ждать нажатия кнопки отправить то исп геттер и сеттер. А так юзаем стейт передачу 1 кнопкой сабмит.
+  // currentPriceFrom: {//если менять список моментально и не ждать нажатия кнопки 'отправить' то исп геттер и сеттер. А так юзаем стейт передачу 1 кнопкой сабмит.
   //   get(){
   //     return this.priceFrom
   //   },
