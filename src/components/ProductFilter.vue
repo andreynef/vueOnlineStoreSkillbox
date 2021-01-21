@@ -1,7 +1,6 @@
 <template>
   <aside class="filter">
-    <h2 class="filter__title">Фильтрыdsdsd</h2>
-
+    <h2 class="filter__title">Фильтры</h2>
     <form class="filter__form form" action="#" method="get" @submit.prevent="submit">
       <fieldset class="form__block">
         <legend class="form__legend">Цена</legend>
@@ -20,15 +19,16 @@
         <label class="form__label form__label--select">
           <select class="form__select" type="text" name="category" v-model.number="currentCategoryId">
             <option value="0">All categories</option>
-            <option value="category.id" v-for="category in categories" :key="category.id">{{category.title}}</option>
+            <option :value="category.id" v-for="category in categories" :key="category.id">{{category.title}}</option>
           </select>
         </label>
       </fieldset>
 
       <fieldset class="form__block">
-        <legend class="form__legend">Цвет ({{currentColor || 'all'}})</legend>
-        <ColorList :colors-arr="colors" :picked-color.sync="currentColor"/>
+        <legend class="form__legend">Цвет ({{currentColorId || 'all'}})</legend>
+        <ColorList :colors-arr="colors" :picked-color-id.sync="currentColorId"/>
       </fieldset>
+
       <button class="filter__submit button button--primery" type="submit">
         Применить
       </button>
@@ -41,78 +41,73 @@
 
 <script>
 
-  import categories from "../data/categories";
-  import colors from "../data/colors";
+  import axios from "axios";
+  import {API_BASE_URL} from "../config";
   import ColorList from "./ColorList";
 
-export default {
+  export default {
   components: {ColorList},
   data() {//внутреннее состояние компонента Aside. Чтобы потом 1 кнопкой отправить действие на обновление осн стейта App.
-    return {//данные кот отображаются в компоненте
-      currentFilterState: {//состояние как 1 обьект для watch одним методом
-        currentPriceFrom:0,
-        currentPriceTo:0,
-        currentCategoryId:0,
-        currentColor:undefined,
-      }
+    return {
+      currentPriceFrom:0,
+      currentPriceTo:0,
+      currentCategoryId:0,
+      currentColorId:null,
+      categoriesData: null,
+      colorsData:null,
     }
   },
   props:['priceFrom','priceTo', 'categoryId', 'color'],
   computed: {
     categories() {
-      return categories;
+      return this.categoriesData ? this.categoriesData.items :[];//если есть в стейте(кот загр из серв) то показ, иначе пусто.
     },
-    colors() {//импортируем весь теоретический список возможных цветов из 'стора' и передаем дальше как вычисляемое значение. Напрямик с импорта нельзя.
-      return colors;
-    },
+    colors() {
+      return this.colorsData;
+    }
   },
-  watch: {//слежка за пропсами. Проп меняется - то и выполняется.
-    currentFilterState: {
-      handler: function(value, oldValue){//handler,deep - завод.
-        if(this.currentFilterState.currentPriceFrom !== oldValue){
-          this.currentFilterState.currentPriceFrom = value;
-        }
-        if(this.currentFilterState.currentPriceTo !== oldValue){
-          this.currentFilterState.currentPriceTo = value;
-        }
-        if(this.currentFilterState.currentCategoryId !== oldValue){
-          this.currentFilterState.currentCategoryId = value;
-        }
-        if(this.currentFilterState.currentColor !== oldValue){
-          this.currentFilterState.currentColor = value;
-        }
-      },
-      deep:true//флаг,включает глубокую вложенность.
+  watch: {//можно сбрасывать стейт вручную в ресете, переназначая на 0, либо исп watch (слежка за пропсами)
+    priceFrom(value){
+      this.currentPriceFrom = value;
     },
-    // priceFrom(value){
-    //   this.currentPriceFrom = value
-    // },
-    // priceTo(value){
-    //   this.currentPriceTo = value;
-    // },
-    // categoryId(value){
-    //   this.currentCategoryId = value;
-    // },
-    // color(value){
-    //   this.currentColor = value;
-    // },
+    priceTo(value){
+      this.currentPriceTo = value;
+    },
+    categoryId(value){
+      this.currentCategoryId = value;
+    },
+    color(value){
+      this.currentColorId = value;
+    },
   },
   methods: {
-    submit(){
+    submit(){//при нажатии на Submit происходит команда на изменение вышестоящего стейта(чер пропсы), ватчер, смотрящий на стейт запускает метод loadProducts(запрос на сервер)
       this.$emit('update:priceFrom', this.currentPriceFrom);
       this.$emit('update:priceTo', this.currentPriceTo);
       this.$emit('update:categoryId', this.currentCategoryId);
-      this.$emit('update:color', this.currentColor);
+      this.$emit('update:colorId', this.currentColorId);
     },
     reset(){
       this.$emit('update:priceFrom', 0);
       this.$emit('update:priceTo', 0);
       this.$emit('update:categoryId', 0);
-      this.$emit('update:color', undefined);
-      this.currentColor = undefined;
+      this.$emit('update:color', null);
+      this.currentColor = null;
+    },
+    loadCategories(){//загрузка готовых категорий с сервера
+      axios.get(`${API_BASE_URL}/api/productCategories`)
+        .then(res => this.categoriesData = res.data)
+    },
+    loadColors(){//загрузка готовых цветов с сервера
+      axios.get(`${API_BASE_URL}/api/colors`)
+        .then(res => this.colorsData = res.data.items)
     },
   },
-  // currentPriceFrom: {//если менять список моментально и не ждать нажатия кнопки 'отправить' то исп геттер и сеттер. А так юзаем стейт передачу 1 кнопкой сабмит.
+  created() {//при рендере блока, сразу вызывается загрузка категорий и цветов
+    this.loadCategories();
+    this.loadColors();
+  }
+  // currentPriceFrom: {//если менять список моментально и не ждать нажатия кнопки отправить то исп геттер и сеттер. А так юзаем стейт передачу 1 кнопкой сабмит.
   //   get(){
   //     return this.priceFrom
   //   },

@@ -1,5 +1,9 @@
 <template>
-  <main class="content container">
+<!--  <main class="content container" v-if="productLoading">Loading...</main>-->
+  <img v-if="productLoading" src="/img/Gear.gif" alt="loading" style="width:80px; margin: 0 auto"/>
+  <span v-else-if="productLoadingFailed">Network error. Couldn't load a product.</span>
+  <main class="content container" v-else-if="!productData">Network error</main>
+  <main class="content container" v-else="productData"><!-- Шаблон грузится сразу до всяких скриптов. Поэтому условие - если уже есть инфа о товаре. -->
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
@@ -24,7 +28,7 @@
     <section class="item">
       <div class="item__pics pics">
         <div class="pics__wrapper">
-          <img width="570" height="570" :src="product.image" :alt="product.title">
+          <img width="570" height="570" :src="product.image.file.url" :alt="product.image.slug">
         </div>
 <!--        <ul class="pics__list">-->
 <!--          <li class="pics__item">-->
@@ -99,10 +103,13 @@
 
             <div class="item__row">
               <Counter :amount.sync="productAmount"/>
-              <button class="button button--primery" type="submit">
-                В корзину
+              <button class="button button--primery" type="submit" :disabled="isProductAdding">
+                <Loader v-show="isProductAdding"/>
+                <span v-show="!isProductAdding">В корзину</span>
               </button>
             </div>
+            <div v-show="isProductAdded">Product successfully added</div>
+            <div v-show="isProductAddingFailed">Network Error. Adding failed.</div>
           </form>
         </div>
       </div>
@@ -161,53 +168,69 @@
 </template>
 
 <script>
-  import products from '@/data/products';
-  import categories from '@/data/categories';
-  import gotoPageFromItem from "@/helpers/gotoPage";
+  import gotoPage from "@/helpers/gotoPage";
   import numberFormat from "@/helpers/numberFormat";
+  import axios from "axios";
+  import {API_BASE_URL} from "../config";
   import Counter from "../components/Counter";
   import ColorList from "../components/ColorList";
+  import Loader from "../components/Loader";
+  import {mapActions} from "vuex";
 
   export default {
-    components: {Counter, ColorList},
+    components: {Counter, ColorList, Loader},
     // props:['pageParams'],//=':page-params' на входе.
     data(){
       return {
         productAmount: 1,
+        productData:null,
+        productLoading:false,
+        productLoadingFailed:false,
         currentColor:undefined,
+        isProductAdded:false,
+        isProductAdding:false,
+        isProductAddingFailed:false,
       }
     },
     filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed.
       numberFormat,
     },
-    computed: {
+    computed: {//вычисляемые значения передают состояние (= значения с сервера)
       product() {
-        // return products.find(product => product.id === this.pageParams.id);
-        return products.find(item => item.id === +this.$route.params.id);//знак + приводит значение в число. Id это число.
+        return this.productData;
       },
       category() {
-        return categories.find(item => item.id === this.product.categoryId);
+        return this.productData.category;
       },
-      pickedColor() {
-        return this.currentColor;
-      }
     },
     methods: {
-      gotoPageFromItem,//вынес в хелперы, глоб видимость дабы избежать дриллинга. gotoPageFromItem(pageName, pageParams)
-      addToCart(){
-        const itemToAdd = {productId: this.product.id, amount: this.productAmount};
-        this.$store.commit('addProductToCart', itemToAdd);//= dispatch action
+      ...mapActions(['addProductToCart']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
+      gotoPage,
+      addToCart() {
+        this.isProductAdded=false;
+        this.isProductAdding=true;
+        this.addProductToCart({productId: this.product.id, amount: this.productAmount})//...mapActions(['addProductToCart']) = dispatch action
+        .then(()=> this.isProductAdded = true)
+        .catch(() => this.isProductAddingFailed = true)
+        .then(()=>this.isProductAdding = false)
+
+      },
+      loadProduct() {//запрос на итем
+        this.productLoading = true;
+        this.productLoadingFailed = false;
+        axios.get(`${API_BASE_URL}/api/products/${+this.$route.params.id}`)//попав на эту стр по клику сверху формируется динамичн сегмент роутера откуда можно достать id запрашиваемого товара.
+          .then(res => this.productData = res.data)
+          .catch(() => this.productLoadingFailed = true)
+          .then(() => this.productLoading = false);
       },
     },
-    watch: {//мЗначение меняется - то и выполняется.
-      '$route.params.id'(){
-        if(!this.product){
-          this.$router.push({name:'notFound'})
-        }
-      },
-      color(value){
-        this.currentColor = value;
-      },
+    watch: {//при ручном изменении урла срабатывает рендер. При первом рендере и при послед изменениях.
+      '$route.params.id': {
+        handler(){//завод опция "что сделать"
+          this.loadProduct();
+        },
+        immediate:true,//= метод created() сработает с таким же содержимым (при первом рендере). Можно удалить оригинальный метод created() .
+      }
     },
   };
 </script>

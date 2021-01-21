@@ -52,6 +52,7 @@ import {mapGetters} from "vuex";
 import CartItem from "../components/CartItem";
 
   export default {
+    components: {CartItem},
     filters: {// html -> {{product.price | numberFormat}} ₽ - значение слева передается аргументом в правую функцию. Фича Vue. Либо аналогом computed.
       numberFormat,
     },
@@ -63,8 +64,8 @@ import CartItem from "../components/CartItem";
       // },
       //либо просто
       ...mapGetters({localProducts:'cartDetailProducts', localTotalPrice:'cartTotalPrice'})//переименование сторного геттера на локальный.
+
     },
-    components: {CartItem}
   };
 
 </script>

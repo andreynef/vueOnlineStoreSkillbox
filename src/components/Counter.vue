@@ -40,3 +40,9 @@
 
   };
 </script>
+
+<style>
+  button:hover {
+    cursor: pointer;
+  }
+</style>
