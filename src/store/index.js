@@ -12,6 +12,8 @@ export default new Vuex.Store({
     isCartLoading:false,
     isCartLoadingFailed:false,
     userAccessKey: null,
+    isDeleting:false,
+    isDeletingFailed:false,
   },
   mutations:{//изменение стейта/стора мутацией а не нов копией как в React. Правило стора. Сохраняет историю, удобно при отладке. Всегда синхронные.
     updateCartProductAmount(state, payload){
@@ -84,47 +86,32 @@ export default new Vuex.Store({
         .then(()=>context.commit('updateIsCartLoading', false))
     },
     addProductToCart(context, {productId,amount}){//2м арг добавляется как и в мутации payload.
-      return (new Promise(resolve => setTimeout(resolve,2000)))//обертка для любого действия с исскусств задержкой (чтобы посмореть статусы отправки)
+      return (new Promise(resolve => setTimeout(resolve,2000)))//обертка для любого action с исскусств задержкой (чтобы посмореть статусы отправки, для дебага)
         .then(()=>{
           return axios//не просто действие axios а с возвратом чтобы потом передать новости о статусе в <ProductPage>.
             .post(`${API_BASE_URL}/api/baskets/products`, {
-              productId: productId,
-              quantity : amount,
+              productId: productId,//нужные данные кот просит сервер
+              quantity : amount,//нужные данные кот просит сервер
             },{
               params:{
                 userAccessKey: context.state.userAccessKey
               }
             })
-            .then(res => {
+            .then(res => {//в ответ приходит обновленная вся корзина
               context.commit('updateCartData', res.data.items);//обновляем корзину через мутацию...
               context.commit('syncCartProducts');//...и затем, после синхронного обновления корзины, переписываем приходящ данные под свой формат.
             })
         })
     },
-    changeProductAmount(context, {productId,amount}){
-      return (new Promise(resolve => setTimeout(resolve,1000)))
-        .then(()=>{
-          return axios
-            .put(`${API_BASE_URL}/api/baskets/products`, {
-              productId: productId,
-              quantity : amount,
-            },{
-              params:{
-                userAccessKey: context.state.userAccessKey
-              }
-            })
-            .then(res => {
-              context.commit('updateCartData', res.data.items);//обновляем корзину через мутацию...
-              context.commit('syncCartProducts');//...и затем, после синхронного обновления корзины, переписываем приходящ данные под свой формат.
-            })
-        })
-    },
-    deleteProductFromCart(context, {productId}){//2м арг добавляется как и в мутации payload.
+    changeProductAmountAction(context, {productId,amount}){
+      console.log('changeProductAmountAction')
       return axios
-        .delete(`${API_BASE_URL}/api/baskets/products`, {
+        .put(`${API_BASE_URL}/api/baskets/products`, {
+          productId: productId,
+          quantity : amount,
+        },{
           params:{
-            userAccessKey: context.state.userAccessKey,
-            productId
+            userAccessKey: context.state.userAccessKey
           }
         })
         .then(res => {
@@ -132,7 +119,22 @@ export default new Vuex.Store({
           context.commit('syncCartProducts');//...и затем, после синхронного обновления корзины, переписываем приходящ данные под свой формат.
         })
     },
-    updateCartAmount(context, {productId,amount}){//схоже с addProductToCart
+    deleteProductFromCartAction(context, {productId}){//2м арг добавляется как и в мутации payload.
+      return axios
+        .delete(`${API_BASE_URL}/api/baskets/products`, {
+          data:{
+            productId: productId,
+          },
+          params:{
+            userAccessKey: context.state.userAccessKey
+          },
+        })
+        .then(res => {
+          context.commit('updateCartData', res.data.items);//обновляем корзину через мутацию...
+          context.commit('syncCartProducts');//...и затем, после синхронного обновления корзины, переписываем приходящ данные под свой формат.
+        })
+    },
+    updateCartProductAmountAction(context, {productId,amount}){//схоже с addProductToCart
       context.commit('updateCartProductAmount', {productId,amount});//не дожидаясь ответа от сервера чтобы отобразить нужное число делаем сразу мутацию. Так быстрее.
       if(amount<1){//исправление ошибки невозможность набрать пустое поле
         return;
@@ -157,7 +159,7 @@ export default new Vuex.Store({
   },
 });
 
-// return (new Promise(resolve =>setTimeout(resolve,2000)))//обертка для любого действия с исскусств задержкой
+// return (new Promise(resolve =>setTimeout(resolve,2000)))//обертка для любого action с исскусств задержкой
 //   .then(()=>{
 //
 //   })

@@ -7,8 +7,8 @@
       {{item.product.title}}
     </h3>
     <span class="product__code">
-                Артикул: {{item.product.id}}
-              </span>
+      Артикул: {{item.product.id}}
+    </span>
 
     <Counter :amount.sync="amount"/>
 
@@ -37,14 +37,12 @@ export default {
   },
   props: ['item'],
   computed: {
-    ...mapActions(['changeProductAmount']),
     amount: {//изменение инпута через сторовскую мутацию. Иначе никак. Правило стора.
       get(){
         return this.item.amount;
       },
       set(value){
-        // this.$store.commit('updateCartProductAmount', {productId:this.item.productId, amount: value});//= commit
-        this.changeProductAmount({productId:this.item.productId, amount: value})
+        this.$store.dispatch('updateCartProductAmountAction', {productId:this.item.productId, amount: value});
       }
     }
   },
@@ -53,10 +51,10 @@ export default {
     //   this.$store.commit('deleteCartProduct', {productId:productId});//= dispatch action
     // },
     //либо так
-    ...mapMutations({deleteProduct:'deleteCartProduct'}),//dispatch action. Отправка в стор команды 'deleteCartProduct' под здешним названием deleteProduct. Аргументы переданные в deleteProduct передаются автоматически.
-    ...mapActions(['deleteProductFromCart']),
-    deleteProduct() {
-      this.deleteProductFromCart({productId:this.item.productId})
+    // ...mapMutations({deleteProduct:'deleteCartProduct'}),//dispatch action. Отправка в стор команды 'deleteCartProduct' под сдешним названием deleteProduct. Аргументы переданные в deleteProduct передаются автоматически.
+    ...mapActions(['deleteProductFromCartAction', 'changeProductAmountAction']),
+    deleteProduct() {//метод инициирующий экшн кот сделает запрос на сервер об удалении товара из корзины.
+      this.deleteProductFromCartAction({productId:this.item.productId})
     },
   }
 };
