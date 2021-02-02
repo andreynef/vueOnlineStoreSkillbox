@@ -26,9 +26,9 @@
 </template>
 
 <script>
-import numberFormat from "../helpers/numberFormat";
+import numberFormat from "../../helpers/numberFormat";
 import {mapActions, mapMutations} from "vuex";
-import Counter from "./Counter";
+import Counter from "../common/Counter";
 
 export default {
   components: {Counter},
@@ -41,8 +41,9 @@ export default {
       get(){
         return this.item.amount;
       },
-      set(value){
-        this.$store.dispatch('updateCartProductAmountAction', {productId:this.item.productId, amount: value});
+      set(value){//изменение количества товара в итеме путем dispatch action.
+        this.$store.dispatch('updateCartProductAmountAction', {productId:this.item.productId, amount: value});//вариант напрямую
+        // this.updateCartProductAmountAction({productId:this.item.productId, amount: value})//вариант через mapActions
       }
     }
   },
@@ -52,7 +53,7 @@ export default {
     // },
     //либо так
     // ...mapMutations({deleteProduct:'deleteCartProduct'}),//dispatch action. Отправка в стор команды 'deleteCartProduct' под сдешним названием deleteProduct. Аргументы переданные в deleteProduct передаются автоматически.
-    ...mapActions(['deleteProductFromCartAction', 'changeProductAmountAction']),
+    ...mapActions(['deleteProductFromCartAction', 'changeProductAmountAction', 'updateCartProductAmountAction']),
     deleteProduct() {//метод инициирующий экшн кот сделает запрос на сервер об удалении товара из корзины.
       this.deleteProductFromCartAction({productId:this.item.productId})
     },

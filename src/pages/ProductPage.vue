@@ -172,9 +172,9 @@
   import numberFormat from "@/helpers/numberFormat";
   import axios from "axios";
   import {API_BASE_URL} from "../config";
-  import Counter from "../components/Counter";
-  import ColorList from "../components/ColorList";
-  import Loader from "../components/Loader";
+  import Counter from "../components/common/Counter";
+  import ColorList from "../components/common/ColorList";
+  import Loader from "../components/common/Loader";
   import {mapActions} from "vuex";
 
   export default {

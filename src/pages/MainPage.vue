@@ -9,7 +9,7 @@
       </span>
     </div>
     <div class="content__catalog">
-      <ProductFilter :price-from.sync="filterPriceFrom" :price-to.sync="filterPriceTo" :category-id.sync="filterCategoryId" :color-id.sync="filterColorId"/>
+      <ProductFilter v-bind.sync="filter"/><!--передача пропа как обьекта без предоставления его названия + sync-->
       <section class="catalog">
         <div style="margin: 0 auto">
           <Loader v-if="productsLoading"/>
@@ -27,14 +27,14 @@
 
 <script>
 
-  import ProductList from "./../components/ProductList.vue";
+  import ProductList from "../components/product/ProductList.vue";
   import Header from './../components/Header.vue';
   import Footer from './../components/Footer.vue';
-  import BasePagination from './../components/BasePagination.vue';
-  import ProductFilter from "./../components/ProductFilter";
+  import BasePagination from '../components/common/BasePagination.vue';
+  import ProductFilter from "../components/product/ProductFilter";
   import axios from "axios";
   import {API_BASE_URL} from "../config";
-  import Loader from "./../components/Loader";
+  import Loader from "../components/common/Loader";
 
   export default {
     components: {
@@ -45,14 +45,16 @@
       ProductFilter,
       Loader,
     },
-    data() {
+    data() {//локальн стейт
       return {
         page: 1,
         productsPerPage: 4,
-        filterPriceFrom: 0,
-        filterPriceTo: 0,
-        filterCategoryId: 0,
-        filterColorId: undefined,
+        filter: {
+          priceFrom: 0,
+          priceTo: 0,
+          categoryId: 0,
+          colorId: null,
+        },
         productsData: null,
         productsLoading: false,
         productsLoadingFailed: false,
@@ -60,7 +62,7 @@
     },
     computed: {//не все товары а только часть, поэтому не просто стейт а компутед.
       products() {
-        return this.productsData//тернарник тк при первом рендере пока не совершен запрос на сервер. Поэтому пока пустой массив.
+        return this.productsData//тернарник тк при первом рендере пока не совершен запрос на сервер. Поэтому сначала пустой массив вместо списка товаров.
           ?this.productsData.items.map(item =>{//приходящ шаблон с сервера меняем на свой. (либо настроить структуру своего шаблона на серверный).
             return {
               ...item,
@@ -83,12 +85,12 @@
         this.loadProductsTimer = setTimeout(()=>{//продолжение трюка. Запишем таймаут в св-ва экземпляра(не стейта)(чтобы потом его очищать по имени, выше)
           axios.get(`${API_BASE_URL}/api/products`, {
             params:  {//апи просит эти параметры.
-              categoryId: this.filterCategoryId,
-              colorId: this.filterColorId,
+              categoryId: this.filter.categoryId,
+              colorId: this.filter.colorId,
               page: this.page,
               limit: this.productsPerPage,
-              minPrice: this.filterPriceFrom,
-              maxPrice: this.filterPriceTo,
+              minPrice: this.filter.priceFrom,
+              maxPrice: this.filter.priceTo,
             }
           })
           .then(res => this.productsData = res.data)//при успехе записывать рез в стейт.
@@ -101,17 +103,11 @@
       page() {//Слежка за стейтом. При нажатии на пагинацию, меняется список товаров. Кажд раз новый запрос.
         this.loadProducts();
       },
-      filterPriceFrom(){//Слежка за стейтом.
-        this.loadProducts();
-      },
-      filterPriceTo(){//Слежка за стейтом.
-        this.loadProducts();
-      },
-      filterCategoryId(){//Слежка за стейтом.
-        this.loadProducts();
-      },
-      filterColorId(){//Слежка за стейтом.
-        this.loadProducts();
+      filter: {
+        handler: function () {
+          this.loadProducts()
+        },
+        deep: true
       },
     },
     created(){// componentDidMount. При рендере компонента Main сразу срабатывает метод 'загрузка итемов'

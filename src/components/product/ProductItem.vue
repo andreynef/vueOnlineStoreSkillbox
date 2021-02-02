@@ -31,8 +31,8 @@
 
 <script>
 import gotoPageFromItem from "@/helpers/gotoPage";
-import numberFormat from "../helpers/numberFormat";
-import ColorList from "./ColorList";
+import numberFormat from "../../helpers/numberFormat";
+import ColorList from "../common/ColorList";
 
 export default {
   props: ['product'],

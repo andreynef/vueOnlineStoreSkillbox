@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import Loader from '../components/Loader'
+  import Loader from '../common/Loader'
   export default {
     components:{Loader},
   };
