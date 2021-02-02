@@ -35,6 +35,7 @@
   import axios from "axios";
   import {API_BASE_URL} from "../config";
   import Loader from "../components/common/Loader";
+  import {mapActions} from "vuex";
 
   export default {
     components: {
@@ -78,20 +79,19 @@
       },
     },
     methods: {
+      ...mapActions(['loadProductsAction']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
       loadProducts(){//запрос на сервер с данными из стейта.
         this.productsLoading=true;
         this.productsLoadingFailed=false;
         clearTimeout(this.loadProductsTimer);//трюк. запросов будет не 3 (3 поля в фильтре изменились = 3 запроса) а всего 1 - последний. При кажд новом вызове отменяется предыдущий. В итоге остается только последний.
         this.loadProductsTimer = setTimeout(()=>{//продолжение трюка. Запишем таймаут в св-ва экземпляра(не стейта)(чтобы потом его очищать по имени, выше)
-          axios.get(`${API_BASE_URL}/api/products`, {
-            params:  {//апи просит эти параметры.
-              categoryId: this.filter.categoryId,
-              colorId: this.filter.colorId,
-              page: this.page,
-              limit: this.productsPerPage,
-              minPrice: this.filter.priceFrom,
-              maxPrice: this.filter.priceTo,
-            }
+          this.loadProductsAction({
+            categoryId: this.filter.categoryId,
+            colorId: this.filter.colorId,
+            page: this.page,
+            limit: this.productsPerPage,
+            minPrice: this.filter.priceFrom,
+            maxPrice: this.filter.priceTo,
           })
           .then(res => this.productsData = res.data)//при успехе записывать рез в стейт.
           .catch(()=>this.productsLoadingFailed=true)

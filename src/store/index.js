@@ -155,7 +155,22 @@ export default new Vuex.Store({
           context.commit('syncCartProducts');
         })
 
-    }
+    },
+    loadProductsAction(context, payload){
+      return axios.get(`${API_BASE_URL}/api/products`, {
+        params:  {//апи просит эти параметры.
+          categoryId: payload.categoryId,
+          colorId: payload.colorId,
+          page: payload.page,
+          limit: payload.limit,
+          minPrice: payload.minPrice,
+          maxPrice: payload.maxPrice,
+        }
+      })
+    },
+    loadProductAction(context, {productId}) {//запрос на итем
+      return axios.get(`${API_BASE_URL}/api/products/${productId}`)
+    },
   },
 });
 

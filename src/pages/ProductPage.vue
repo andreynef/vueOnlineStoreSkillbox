@@ -170,8 +170,6 @@
 <script>
   import gotoPage from "@/helpers/gotoPage";
   import numberFormat from "@/helpers/numberFormat";
-  import axios from "axios";
-  import {API_BASE_URL} from "../config";
   import Counter from "../components/common/Counter";
   import ColorList from "../components/common/ColorList";
   import Loader from "../components/common/Loader";
@@ -204,7 +202,7 @@
       },
     },
     methods: {
-      ...mapActions(['addProductToCart']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
+      ...mapActions(['addProductToCart', 'loadProductAction']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
       gotoPage,
       addToCart() {
         this.isProductAdded=false;
@@ -218,7 +216,7 @@
       loadProduct() {//запрос на итем
         this.productLoading = true;
         this.productLoadingFailed = false;
-        axios.get(`${API_BASE_URL}/api/products/${+this.$route.params.id}`)//попав на эту стр по клику сверху формируется динамичн сегмент роутера откуда можно достать id запрашиваемого товара.
+        this.loadProductAction({productId: this.$route.params.id})//попав на эту стр по клику сверху формируется динамичн сегмент роутера откуда можно достать id запрашиваемого товара.
           .then(res => this.productData = res.data)
           .catch(() => this.productLoadingFailed = true)
           .then(() => this.productLoading = false);
