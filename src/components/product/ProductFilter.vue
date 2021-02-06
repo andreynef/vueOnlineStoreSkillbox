@@ -68,20 +68,20 @@
       return this.colorsData;
     }
   },
-  watch: {//можно сбрасывать стейт вручную в ресете, переназначая на 0, либо исп watch (слежка за пропсами)
-    priceFrom(value){
-      this.current.priceFrom = value;
-    },
-    priceTo(value){
-      this.current.priceTo = value;
-    },
-    categoryId(value){
-      this.current.categoryId = value;
-    },
-    colorId(value){
-      this.current.colorId = value;
-    },
-  },
+  // watch: {//можно сбрасывать стейт вручную в ресете, переназначая на 0, либо исп watch (слежка за пропсами)
+  //   priceFrom(value){
+  //     this.current.priceFrom = value;
+  //   },
+  //   priceTo(value){
+  //     this.current.priceTo = value;
+  //   },
+  //   categoryId(value){
+  //     this.current.categoryId = value;
+  //   },
+  //   colorId(value){
+  //     this.current.colorId = value;
+  //   },
+  // },
   methods: {
     submit(){//при нажатии на Submit происходит команда на изменение вышестоящего стейта(чер пропсы), ватчер, смотрящий на стейт запускает метод loadProducts(запрос на сервер)
       this.$emit('update:priceFrom', this.current.priceFrom);

@@ -14,8 +14,13 @@ export default new Vuex.Store({
     userAccessKey: null,
     isDeleting:false,
     isDeletingFailed:false,
+    orderInfo: null
   },
   mutations:{//изменение стейта/стора мутацией а не нов копией как в React. Правило стора. Сохраняет историю, удобно при отладке. Всегда синхронные.
+    resetCart(state){
+      state.cart = [];
+      state.cartData = [];
+    },
     updateCartProductAmount(state, payload){
       const existingItems = state.cart.find(item=>item.productId === payload.productId);
       if (existingItems){
@@ -24,6 +29,9 @@ export default new Vuex.Store({
     },
     deleteCartProduct(state, productId){
       state.cart = state.cart.filter(item=>item.productId !== productId);
+    },
+    updateOrderInfo(state, orderInfo){
+      state.orderInfo = orderInfo;
     },
     updateUserAccessKey(state, accessKey){
       state.userAccessKey = accessKey;
@@ -62,8 +70,26 @@ export default new Vuex.Store({
     cartTotalPrice(state,getters){
       return getters.cartDetailProducts.reduce((acc,item)=>(item.product.price * item.amount)+ acc, 0);
     },
+    getOrderInfo(state){
+      return state.orderInfo;
+    },
   },
   actions: {//опция actions где возможны синхр и ассинхр операции. Запуск происходит из компонента App.
+    loadOrderInfo(context,orderId){
+    return axios//лучше всегда возвращать axios, хороший тон.
+    .get(`${API_BASE_URL}/api/orders/${orderId}`, {
+        params: {
+          userAccessKey: context.state.userAccessKey
+        },
+      })
+      .then((res)=>{
+        context.commit('updateOrderInfo', res.data)
+      })
+      .catch((err)=>{
+        console.log('error:',err)
+      })
+
+    },
     loadCart(context){//в контексте прилетают те же методы что и у глоб хранилища 'new Vuex.Store' например context.commit.
       context.commit('updateIsCartLoading', true);
       return axios//лучше всегда возвращать axios, хороший тон.

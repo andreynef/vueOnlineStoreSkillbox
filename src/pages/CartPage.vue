@@ -37,9 +37,9 @@
             Итого: <span>{{localTotalPrice | numberFormat}} ₽</span>
           </p>
 
-          <button class="cart__button button button--primery" type="submit">
-            Оформить заказ
-          </button>
+          <router-link :to="{name:'order'}" tag="button" class="cart__button button button--primery" type="submit" v-if="localProducts.length">
+            Перейти к оформлению заказа
+          </router-link>
         </div>
       </form>
     </section>
