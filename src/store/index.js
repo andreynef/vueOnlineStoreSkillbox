@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 import {API_BASE_URL} from "../config";
+import router from "../router/index"
 
 Vue.use(Vuex);
 
@@ -70,11 +71,30 @@ export default new Vuex.Store({
     cartTotalPrice(state,getters){
       return getters.cartDetailProducts.reduce((acc,item)=>(item.product.price * item.amount)+ acc, 0);
     },
-    getOrderInfo(state){
+    orderInfo(state){
       return state.orderInfo;
     },
   },
   actions: {//опция actions где возможны синхр и ассинхр операции. Запуск происходит из компонента App.
+    makeOrder(context, payload){//2м арг добавляется как и в мутации payload.
+      return axios
+        .post(`${API_BASE_URL}/api/orders`, {
+          name: payload.name,
+          address: payload.address,
+          phone: payload.phone,
+          email: payload.email,
+          comment: payload.comment
+        },{
+          params:{
+            userAccessKey: context.state.userAccessKey
+          }
+        })
+        .then((res)=>{
+          context.commit('resetCart');
+          context.commit('updateOrderInfo', res.data);
+          router.push({name:'orderInfo', params: {id: res.data.id}});//перейти на стр оформленного заказа передавая id
+        })
+    },
     loadOrderInfo(context,orderId){
     return axios//лучше всегда возвращать axios, хороший тон.
     .get(`${API_BASE_URL}/api/orders/${orderId}`, {
@@ -86,9 +106,9 @@ export default new Vuex.Store({
         context.commit('updateOrderInfo', res.data)
       })
       .catch((err)=>{
-        console.log('error:',err)
+        console.log('error from actions loadOrderInfo:',err);
+        router.push({name:'notFound'});
       })
-
     },
     loadCart(context){//в контексте прилетают те же методы что и у глоб хранилища 'new Vuex.Store' например context.commit.
       context.commit('updateIsCartLoading', true);

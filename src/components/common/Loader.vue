@@ -22,7 +22,7 @@
     margin-left: 3px;
   }
   .sk-wave .sk-rect {
-    background-color: green;
+    background-color: seagreen;
     height: 100%;
     width: .5em;
     display: inline-block;

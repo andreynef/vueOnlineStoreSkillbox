@@ -2,28 +2,16 @@
   <main class="content container">
     <div class="content__top">
       <ul class="breadcrumbs">
-        <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="index.html">
-            Каталог
-          </a>
-        </li>
-        <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="cart.html">
-            Корзина
-          </a>
-        </li>
-        <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link">
-            Оформление заказа
-          </a>
-        </li>
+        <BreadCrumbItem :to="{name:'main'}" text="Каталог"/>
+        <BreadCrumbItem :to="{name:'cart'}" text="Корзина"/>
+        <BreadCrumbItem :to="{name:'order'}" text="Оформление заказа"/>
       </ul>
 
       <h1 class="content__title">
         Корзина
       </h1>
       <span class="content__info">
-        Количество товаров: {{cartDetailProducts.length}} шт.
+        Количество товара: {{cartDetailProducts.length}} шт.
       </span>
     </div>
 
@@ -42,42 +30,14 @@
           <div class="cart__options">
             <h3 class="cart__title">Доставка</h3>
             <ul class="cart__options options">
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" value="0" checked="">
-                  <span class="options__value">
-                    Самовывоз <b>бесплатно</b>
-                  </span>
-                </label>
-              </li>
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" value="500">
-                  <span class="options__value">
-                    Курьером <b>500 ₽</b>
-                  </span>
-                </label>
-              </li>
+              <OptionsItem type="radio" name="delivery">Самовывоз <b>бесплатно</b></OptionsItem>
+              <OptionsItem type="radio" name="delivery">Курьером <b>500 ₽</b></OptionsItem>
             </ul>
 
             <h3 class="cart__title">Оплата</h3>
             <ul class="cart__options options">
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="pay" value="card">
-                  <span class="options__value">
-                    Картой при получении
-                  </span>
-                </label>
-              </li>
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="pay" value="cash">
-                  <span class="options__value">
-                    Наличными при получении
-                  </span>
-                </label>
-              </li>
+              <OptionsItem type="radio" name="pay">Картой при получении</OptionsItem>
+              <OptionsItem type="radio" name="pay">Наличными при получении</OptionsItem>
             </ul>
           </div>
         </div>
@@ -115,13 +75,13 @@
 <script>
 import BaseFormText from "../components/common/BaseFormText";
 import BaseFormTextarea from "../components/common/BaseFormTextarea";
-import axios from "axios";
-import {API_BASE_URL} from "../config";
 import {mapGetters} from "vuex";
 import Loader from "../components/common/Loader";
+import BreadCrumbItem from "../components/common/BreadCrumbItem";
+import OptionsItem from "../components/common/OptionsItem";
 
   export default {
-    components: {BaseFormTextarea, BaseFormText, Loader},
+    components: {OptionsItem, BreadCrumbItem, BaseFormTextarea, BaseFormText, Loader},
     data(){
       return {
         formData: {},//пустой. Но с помощью привязки полей через v-model, этот обьект сам будет заполняться свойствами имя кот обозначены в разметке в v-model
@@ -136,26 +96,13 @@ import Loader from "../components/common/Loader";
         this.formError = {};
         this.formErrorMessage = '';
         this.isOrdering = true;
-        axios
-          .post(`${API_BASE_URL}/api/orders`, {
-          ...this.formData//нужные данные кот просит сервер
-        },{
-          params:{
-            userAccessKey: this.$store.state.userAccessKey
-          }
-        })
-          .then((res)=>{
-            this.$store.commit('resetCart');
-            this.$store.commit('updateOrderInfo', res.data);
-            this.$router.push({name:'orderInfo', params: {id: res.data.id}});//перейти на стр оформленного заказа передавая id
-          })
+        this.$store.dispatch('makeOrder', this.formData)
           .catch((error)=>{
             this.formError = error.response.data.error.request || {};//или пустой обьект чтобы не было ошибок тк используются обьектные внутренности при рендере.
             this.formErrorMessage = error.response.data.error.message;
             this.isOrderingFailed = true;
           })
           .then(() => this.isOrdering = false);
-
       }
     },
     computed: {

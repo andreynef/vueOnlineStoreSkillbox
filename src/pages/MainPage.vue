@@ -79,7 +79,7 @@
       },
     },
     methods: {
-      ...mapActions(['loadProductsAction']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
+      ...mapActions(['loadProductsAction', 'loadCart']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
       loadProducts(){//запрос на сервер с данными из стейта.
         this.productsLoading=true;
         this.productsLoadingFailed=false;
@@ -98,6 +98,9 @@
           .then(()=>this.productsLoading=false);
         },0)
       },
+      loadCartMethod(){
+        this.loadCart()
+      }
     },
     watch: {//при люб пуке любого указанного значения-> перерендер
       page() {//Слежка за стейтом. При нажатии на пагинацию, меняется список товаров. Кажд раз новый запрос.
@@ -112,6 +115,7 @@
     },
     created(){// componentDidMount. При рендере компонента Main сразу срабатывает метод 'загрузка итемов'
       this.loadProducts();
+      this.loadCartMethod();
     }
   };
 </script>

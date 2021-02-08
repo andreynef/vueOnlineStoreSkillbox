@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header__wrapper container">
-      <router-link :to="{name:'main'}" class="header__info myClass">Каталоггггг</router-link>
+      <router-link :to="{name:'main'}" class="header__info myClass">Каталог</router-link>
 
       <a class="header__logo" href="#">
         <img src="img/svg/logo-tech.svg" alt="Лого Технозавррр" width="190" height="33">
