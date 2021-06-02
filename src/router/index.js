@@ -1,19 +1,19 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import MainPage from "../pages/MainPage";
-import NotFoundPage from "../pages/NotFoundPage";
-import ProductPage from "../pages/ProductPage";
+import MainPage from "@/pages/MainPage";
+import NotFoundPage from "@/pages/NotFoundPage";
+import ProductPage from "@/pages/ProductPage";
 import CartPage from "@/pages/CartPage";
-import OrderPage from "../pages/OrderPage";
-import OrderInfoPage from "../pages/OrderInfoPage";
+import OrderPage from "@/pages/OrderPage";
+import OrderInfoPage from "@/pages/OrderInfoPage";
 
 Vue.use(VueRouter);
 
-const routes = [
+const routes = [//приоритет сверху вниз
   {name:'main', component: MainPage, path : '/'},
   {name:'cart', component: CartPage, path : '/cart'},
   {name:'order', component: OrderPage, path : '/order'},
-  {name:'orderInfo', component: OrderInfoPage, path : '/order/:id'},
+  {name:'orderInfo', component: OrderInfoPage, path : '/order/:id'},//динамический сегмент в роутере - : .
   {name:'product', component: ProductPage, path : '/product/:id'},
   {name:'notFound', component: NotFoundPage, path : '*'},
 ];
@@ -26,7 +26,7 @@ export default router;
 
 // import Vue from 'vue';
 // import VueRouter from 'vue-router';
-// import Home from '../views/Home.vue';
+// import Home from '@/views/Home.vue';
 //
 // Vue.use(VueRouter);
 //
@@ -42,7 +42,7 @@ export default router;
 //     // route level code-splitting
 //     // this generates a separate chunk (about.[hash].js) for this route
 //     // which is lazy-loaded when the route is visited.
-//     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+//     component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue'),
 //   },
 // ];
 //

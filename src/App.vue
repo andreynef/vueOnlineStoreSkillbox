@@ -19,7 +19,7 @@ export default {
       this.updateUserAccessKey(userAccessKey);//компонент отрендерился -> команда стору обновить ключ стора через мутацию.
     }
     // this.$store.dispatch('loadCart');//без mapActions. Загрузка сущ корзины. $store.dispatch вызывает методы actions у стора (store/index.js)
-    this.loadCart();//с mapActions. Команда стору загрузить корзину. $store.dispatch вызывает методы actions у стора (store/index.js)
+    // this.loadCart();//с mapActions. Команда стору загрузить корзину. $store.dispatch вызывает методы actions у стора (store/index.js)
   },
   methods: {
     ...mapActions(['loadCart']),

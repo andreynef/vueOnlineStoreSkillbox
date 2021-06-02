@@ -30,14 +30,14 @@
           <div class="cart__options">
             <h3 class="cart__title">Доставка</h3>
             <ul class="cart__options options">
-              <OptionsItem type="radio" name="delivery">Самовывоз <b>бесплатно</b></OptionsItem>
-              <OptionsItem type="radio" name="delivery">Курьером <b>500 ₽</b></OptionsItem>
+              <OptionsItem name="delivery" value="бесплатно" :picked.sync="formData.deliveryPrice">Самовывоз <b>бесплатно</b></OptionsItem>
+              <OptionsItem name="delivery" value="500 ₽" :picked.sync="formData.deliveryPrice">Курьером <b>500 ₽</b></OptionsItem>
             </ul>
 
             <h3 class="cart__title">Оплата</h3>
             <ul class="cart__options options">
-              <OptionsItem type="radio" name="pay">Картой при получении</OptionsItem>
-              <OptionsItem type="radio" name="pay">Наличными при получении</OptionsItem>
+              <OptionsItem name="payment" value="Картой при получении" :picked.sync="formData.paymentMethod">Картой при получении</OptionsItem>
+              <OptionsItem name="payment" value="Наличными при получении" :picked.sync="formData.paymentMethod">Наличными при получении</OptionsItem>
             </ul>
           </div>
         </div>
@@ -52,7 +52,7 @@
           </ul>
 
           <div class="cart__total">
-            <p>Доставка: <b>500 ₽</b></p>
+            <p>Доставка: <b>{{formData.deliveryPrice}}</b></p>
             <p>Итого: <b>{{cartDetailProducts.length}}</b> товара на сумму <b>{{cartTotalPrice}} ₽</b></p>
           </div>
 
@@ -84,8 +84,12 @@ import OptionsItem from "../components/common/OptionsItem";
     components: {OptionsItem, BreadCrumbItem, BaseFormTextarea, BaseFormText, Loader},
     data(){
       return {
-        formData: {},//пустой. Но с помощью привязки полей через v-model, этот обьект сам будет заполняться свойствами имя кот обозначены в разметке в v-model
+        formData: {
+          deliveryPrice:'не указано',
+          paymentMethod:'не указано',
+        },//пустой. Но с помощью привязки полей через v-model, этот обьект сам будет заполняться свойствами имя кот обозначены в разметке в v-model
         formError:{},//аналогичная логика - автоматом заполняется
+        payment:'',
         formErrorMessage: '',
         isOrdering: false,
         isOrderingFailed: false,

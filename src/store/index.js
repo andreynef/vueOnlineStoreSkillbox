@@ -83,7 +83,8 @@ export default new Vuex.Store({
           address: payload.address,
           phone: payload.phone,
           email: payload.email,
-          comment: payload.comment
+          comment: payload.comment,
+
         },{
           params:{
             userAccessKey: context.state.userAccessKey
@@ -131,19 +132,21 @@ export default new Vuex.Store({
         })
         .then(()=>context.commit('updateIsCartLoading', false))
     },
-    addProductToCart(context, {productId,amount}){//2м арг добавляется как и в мутации payload.
+    addProductToCart(context, {offerId,amount,colorId}){//2м арг добавляется как и в мутации payload.
       return (new Promise(resolve => setTimeout(resolve,2000)))//обертка для любого action с исскусств задержкой (чтобы посмореть статусы отправки, для дебага)
         .then(()=>{
           return axios//не просто действие axios а с возвратом чтобы потом передать новости о статусе в <ProductPage>.
             .post(`${API_BASE_URL}/api/baskets/products`, {
-              productId: productId,//нужные данные кот просит сервер
+              productOfferId: offerId,//нужные данные кот просит сервер
               quantity : amount,//нужные данные кот просит сервер
+              colorId: colorId,
             },{
               params:{
-                userAccessKey: context.state.userAccessKey
+                userAccessKey: '0e23c5d0eafb489236bc4b5e72c79ed6'
               }
             })
             .then(res => {//в ответ приходит обновленная вся корзина
+
               context.commit('updateCartData', res.data.items);//обновляем корзину через мутацию...
               context.commit('syncCartProducts');//...и затем, после синхронного обновления корзины, переписываем приходящ данные под свой формат.
             })
@@ -207,6 +210,7 @@ export default new Vuex.Store({
         params:  {//апи просит эти параметры.
           categoryId: payload.categoryId,
           colorId: payload.colorId,
+          props:payload.props,
           page: payload.page,
           limit: payload.limit,
           minPrice: payload.minPrice,
@@ -218,21 +222,12 @@ export default new Vuex.Store({
       return axios.get(`${API_BASE_URL}/api/products/${productId}`)
     },
   },
+  modules:{
+
+  }
 });
 
 // return (new Promise(resolve =>setTimeout(resolve,2000)))//обертка для любого action с исскусств задержкой
 //   .then(()=>{
 //
 //   })
-
-
-// export default new Vuex.Store({
-//   state: {
-//   },
-//   mutations: {
-//   },
-//   actions: {
-//   },
-//   modules: {
-//   },
-// });

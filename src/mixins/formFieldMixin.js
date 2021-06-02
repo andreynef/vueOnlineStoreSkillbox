@@ -6,9 +6,11 @@ export default {
   computed: {
     dataValue: {//двунаправленное вычисляемое св-во
       get() {
+        // console.log('get', this.value)
         return this.value
       },
       set(value) {
+        // console.log('set', value)
         this.$emit('input', value);
       }
     }

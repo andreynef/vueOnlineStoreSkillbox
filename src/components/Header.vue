@@ -11,7 +11,7 @@
         8 800 600 90 09
       </a>
 
-      <CartIndicator/>
+<!--      <CartIndicator/>-->
 
     </div>
   </header>

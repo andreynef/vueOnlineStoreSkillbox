@@ -28,11 +28,11 @@
       },
     },
     computed: {
-      currentAmount: {//currentAmount тжсм проп amount но с доп возможностью его изменения (+.sync синхронизация)
+      currentAmount: {//currentAmount тжсм проп amount но с доп возможностью его изменения (+.sync на входе, синхронизация)
         get(){
           return this.amount;//возвращ проп как обычн проп.
         },
-        set(value){//изменить проп. Хей проп amount, я печатаю твое значение, измени себя.
+        set(value){//изменить проп. = эй проп amount, я печатаю твое значение, измени себя.
           this.$emit('update:amount', value);//двунаправленная связь параметров (+ '.sync' снаружи (:likes.sync='headerLikes'), тжсм v-on:update:likes='headerLikes').
         }
       }

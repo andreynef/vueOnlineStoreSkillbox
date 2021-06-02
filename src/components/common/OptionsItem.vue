@@ -1,7 +1,7 @@
 <template>
   <li class="options__item">
     <label class="options__label">
-      <input class="options__radio sr-only" v-model="dataValue" :type="type" :name="name">
+      <input class="options__radio sr-only" v-model="computedValue" type="radio" :value="value">
       <span class="options__value">
         <slot/>
       </span>
@@ -10,11 +10,19 @@
 </template>
 
 <script>
-  import formFieldMixin from "../../mixins/formFieldMixin";
-
   export default {
-    props:['type','name'],//value это v-model родителя. Именуется "value" по умолчанию. (<BaseFormText v-model="formData.name")
-    mixins: [formFieldMixin]
+    props:['picked','value'],//value это v-model родителя. Именуется "value" по умолчанию. (<BaseFormText v-model="formData.name")
+    computed:{
+      computedValue: {//двунаправленное вычисляемое св-во
+        get() {
+          return this.picked
+        },
+        set(value) {
+          // console.log('set', value)
+          this.$emit('update:picked', value);
+        }
+      }
+    },
   };
 </script>
 
