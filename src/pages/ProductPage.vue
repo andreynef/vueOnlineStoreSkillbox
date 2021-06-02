@@ -8,14 +8,14 @@
       <ul class="breadcrumbs">
         <BreadCrumbItem :to="{name:'main'}" text="Каталог"/>
         <BreadCrumbItem :to="{name:'main'}" :text="category.title"/>
-        <BreadCrumbItem :to="{name:'product'}" :text="product.title"/>
+        <BreadCrumbItem :to="{name:'product'}" :text="productData.title"/>
       </ul>
     </div>
 
     <section class="item">
       <div class="item__pics pics">
         <div class="pics__wrapper">
-          <img width="570" height="570" :src="product.preview.file.url" :alt="product.preview.slug">
+          <img width="570" height="570" :src="productData.preview.file.url" :alt="productData.preview.slug">
         </div>
 <!--        <ul class="pics__list">-->
 <!--          <li class="pics__item">-->
@@ -155,9 +155,6 @@
       numberFormat,
     },
     computed: {//вычисляемые значения передают состояние (= значения с сервера)
-      product() {
-        return this.productData;
-      },
       category() {
         return this.productData.category;
       },

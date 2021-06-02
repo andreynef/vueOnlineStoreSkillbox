@@ -12,17 +12,17 @@
           <span class="form__value">До</span>
         </label>
       </BaseFilterField>
-      <BaseFilterField title="Категория:" :error="categoryError">
+      <BaseFilterField title="Категория:" :error="error.category">
         <label class="form__label form__label--select">
           <select class="form__select" type="text" name="category" v-model.number="current.categoryId">
             <option :value="category.id" v-for="category in computedCategories" :key="category.id">{{category.title}}</option>
           </select>
         </label>
       </BaseFilterField>
-      <BaseFilterField title="Цвет:" :error="priceError">
+      <BaseFilterField title="Цвет:" :error="error.price">
         <ColorList :colors-arr="computedColors" title="Цвет:" :picked-color-id.sync="current.colorId"/>
       </BaseFilterField>
-      <BaseFilterField title="Объем в ГБ:" :error="memoryError">
+      <BaseFilterField title="Объем в ГБ:" :error="error.memory">
         --list of Gb--
       </BaseFilterField>
 
@@ -58,6 +58,11 @@
       // categoriesDataExample: [{id: 2, title: "Ноутбуки", slug: "noutbuki"}, {...}],
       colorsData: null,//при загрузке компонента запрос и запись в стейт
       // colorsDataExample: [{id: 1, title: "Фиолетовый", code: "#a600ff"}, {...}],
+      error:{
+        category: null,
+        memory: null,
+        price: null,
+      }
     }
   },
   computed: {
