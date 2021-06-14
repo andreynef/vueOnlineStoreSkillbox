@@ -11,7 +11,7 @@
         Корзина
       </h1>
       <span class="content__info">
-        Количество товара: {{cartDetailProducts.length}} шт.
+        Количество товаров: {{cartDetailProducts.length}} шт.
       </span>
     </div>
 
@@ -30,14 +30,12 @@
           <div class="cart__options">
             <h3 class="cart__title">Доставка</h3>
             <ul class="cart__options options">
-              <OptionsItem name="delivery" value="бесплатно" :picked.sync="formData.deliveryPrice">Самовывоз <b>бесплатно</b></OptionsItem>
-              <OptionsItem name="delivery" value="500 ₽" :picked.sync="formData.deliveryPrice">Курьером <b>500 ₽</b></OptionsItem>
+              <OptionsItem name="delivery" v-for="item in $store.state.deliveries" :key="item.id" :value="item" :picked.sync="formData.delivery">{{item.title}}</OptionsItem>
             </ul>
 
             <h3 class="cart__title">Оплата</h3>
             <ul class="cart__options options">
-              <OptionsItem name="payment" value="Картой при получении" :picked.sync="formData.paymentMethod">Картой при получении</OptionsItem>
-              <OptionsItem name="payment" value="Наличными при получении" :picked.sync="formData.paymentMethod">Наличными при получении</OptionsItem>
+              <OptionsItem name="payment" v-for="item in $store.state.payments" :key="item.id" :value="item" :picked.sync="formData.payments">{{item.title}}</OptionsItem>
             </ul>
           </div>
         </div>
@@ -52,13 +50,14 @@
           </ul>
 
           <div class="cart__total">
-            <p>Доставка: <b>{{formData.deliveryPrice}}</b></p>
+            <p>Доставка: <b>{{computedDeliveryPrice}}</b></p>
+            <p>Оплата: <b>{{computedPaymentMethod}}</b></p>
             <p>Итого: <b>{{cartDetailProducts.length}}</b> товара на сумму <b>{{cartTotalPrice}} ₽</b></p>
           </div>
 
           <button class="cart__button button button--primery" type="submit">
-            <Loader v-show="isOrdering"/>
-            <span v-show="!isOrdering">Оформить заказ</span>
+            <Loader v-show="status.isOrdering"/>
+            <span v-show="!status.isOrdering">Оформить заказ</span>
           </button>
         </div>
         <div class="cart__error form__error-block" v-if="formErrorMessage">
@@ -84,33 +83,51 @@ import OptionsItem from "../components/common/OptionsItem";
     components: {OptionsItem, BreadCrumbItem, BaseFormTextarea, BaseFormText, Loader},
     data(){
       return {
-        formData: {
-          deliveryPrice:'не указано',
-          paymentMethod:'не указано',
-        },//пустой. Но с помощью привязки полей через v-model, этот обьект сам будет заполняться свойствами имя кот обозначены в разметке в v-model
-        formError:{},//аналогичная логика - автоматом заполняется
-        payment:'',
+        formData: {},//самодобавление (v-model="formData.email")
+        formError:{},//самодобавление при ответе с сервера (:error="formError.phone")
         formErrorMessage: '',
-        isOrdering: false,
-        isOrderingFailed: false,
+        status:{
+          isOrdering: false,
+          isOrderingFailed: false,
+        },
       }
     },
     methods: {
       order(){
         this.formError = {};
         this.formErrorMessage = '';
-        this.isOrdering = true;
+        this.status.isOrdering = true;
         this.$store.dispatch('makeOrder', this.formData)
           .catch((error)=>{
             this.formError = error.response.data.error.request || {};//или пустой обьект чтобы не было ошибок тк используются обьектные внутренности при рендере.
             this.formErrorMessage = error.response.data.error.message;
-            this.isOrderingFailed = true;
+            this.status.isOrderingFailed = true;
           })
-          .then(() => this.isOrdering = false);
-      }
+          .then(() => this.status.isOrdering = false);
+      },
     },
     computed: {
       ...mapGetters(['cartDetailProducts', 'cartTotalPrice']),//через запятую в массиве указ все геттеры из стора.
+      computedDeliveryPrice(){
+        if(!this.formData.delivery){
+          return 'не указано'
+        }else {
+          if(this.formData.delivery.price==='0') return this.formData.delivery.title.toLowerCase() + ' (бесплатно)'
+          return this.formData.delivery.price + '₽'
+        }
+      },
+      computedPaymentMethod(){
+        if(!this.formData.payments){
+          return 'не указано'
+        }else return this.formData.payments.title
+      }
+    },
+    watch:{
+      computedDeliveryPrice(){
+        delete this.formData.payments;//зачистить поле оплаты которое зависит от доставки
+        if(!this.formData.delivery) return;
+        this.$store.dispatch('loadPayments', {id:this.formData.delivery.id})
+      },
     }
   };
 

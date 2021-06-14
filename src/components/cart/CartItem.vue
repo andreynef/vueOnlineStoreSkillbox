@@ -45,8 +45,8 @@ export default {
         return this.item.amount;
       },
       set(value){//изменение количества товара в итеме путем dispatch action.
-        this.$store.dispatch('updateCartProductAmountAction', {productId:this.item.productId, amount: value});//вариант напрямую
-        // this.updateCartProductAmountAction({productId:this.item.productId, amount: value})//вариант через mapActions
+        // this.$store.dispatch('updateCartProductAmountAction', {productId:this.item.productId, amount: value});//вариант напрямую
+        this.updateCartProductAmountAction({productId:this.item.productId, amount: value})//вариант через mapActions
       }
     }
   },

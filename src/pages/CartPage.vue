@@ -17,7 +17,7 @@
         Корзина
       </h1>
       <span class="content__info">
-        Количество товаров: {{localProducts.length}} шт.
+        Количество товаров: {{cartDetailProducts.length}} шт.
       </span>
     </div>
 
@@ -25,7 +25,7 @@
       <form class="cart__form form" action="#" method="POST">
         <div class="cart__field">
           <ul class="cart__list">
-            <CartItem v-for="item in localProducts" :key="item.productId" :item="item"/>
+            <CartItem v-for="item in cartDetailProducts" :key="item.productId" :item="item"/>
           </ul>
         </div>
 
@@ -34,10 +34,10 @@
             Мы&nbsp;посчитаем стоимость доставки на&nbsp;следующем этапе
           </p>
           <p class="cart__price">
-            Итого: <span>{{localTotalPrice | numberFormat}} ₽</span>
+            Итого: <span>{{cartTotalPrice | numberFormat}} ₽</span>
           </p>
 
-          <router-link :to="{name:'order'}" tag="button" class="cart__button button button--primery" type="submit" v-if="localProducts.length">
+          <router-link :to="{name:'order'}" tag="button" class="cart__button button button--primery" type="submit" v-if="cartDetailProducts.length">
             Перейти к оформлению заказа
           </router-link>
         </div>
@@ -63,8 +63,8 @@ import CartItem from "../components/cart/CartItem";
       //   // return this.$store.getters.cartDetailProducts;//вариант доставания метода без mapGetters.
       // },
       //либо просто
-      ...mapGetters({localProducts:'cartDetailProducts', localTotalPrice:'cartTotalPrice'})//переименование сторного геттера на локальный.
-
+      // ...mapGetters({localProducts:'cartDetailProducts', localTotalPrice:'cartTotalPrice'})//переименование сторного геттера на локальный.
+      ...mapGetters(['cartDetailProducts','cartTotalPrice'])
     },
   };
 

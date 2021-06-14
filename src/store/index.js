@@ -15,10 +15,12 @@ export default new Vuex.Store({
     userAccessKey: null,
     isDeleting:false,
     isDeletingFailed:false,
-    orderInfo: null
+    orderInfo: null,
+    deliveries:null,
+    payments:null,
   },
   mutations:{//изменение стейта/стора мутацией а не нов копией как в React. Правило стора. Сохраняет историю, удобно при отладке. Всегда синхронные.
-    resetCart(state){
+    resetLocalCart(state){
       state.cart = [];
       state.cartData = [];
     },
@@ -31,8 +33,8 @@ export default new Vuex.Store({
     deleteCartProduct(state, productId){
       state.cart = state.cart.filter(item=>item.productId !== productId);
     },
-    updateOrderInfo(state, orderInfo){
-      state.orderInfo = orderInfo;
+    updateOrderInfo(state, data){
+      state.orderInfo = data;
     },
     updateUserAccessKey(state, accessKey){
       state.userAccessKey = accessKey;
@@ -46,10 +48,13 @@ export default new Vuex.Store({
     updateIsCartLoadingFailed(state, bool){
       state.isCartLoadingFailed = bool;
     },
+    updatePayments(state, payments){
+      state.payments = payments
+    },
     syncCartProducts(state){//cart свой и cartData приходящий с сервера не совпадают. Поэтому преобр их в 1 формат.
       state.cart = state.cartData.map(item=>{
         return {
-          productId: item.product.id,//слева стейт и справа результат с сервера.
+          productId: item.id,//слева стейт и справа результат с сервера.
           amount: item.quantity,//слева стейт и справа результат с сервера.
         }
       })
@@ -58,12 +63,12 @@ export default new Vuex.Store({
   getters: {
     cartDetailProducts(state) {
       return state.cart.map(item => {
-        const product = state.cartData.find(p=>p.product.id===item.productId).product;//найти тот элемент кот приходит с сервера в нашей корзине
+        const product = state.cartData.find(dataItem=>dataItem.id===item.productId).productOffer.product;//найти тот элемент кот приходит с сервера в нашей корзине
         return {
           ...item,
           product: {
             ...product,
-            image:product.image.file.url
+            image:product.preview.file.url
           },
         }
       })
@@ -84,14 +89,15 @@ export default new Vuex.Store({
           phone: payload.phone,
           email: payload.email,
           comment: payload.comment,
-
+          deliveryTypeId:payload.delivery.id,
+          paymentTypeId:payload.payments.id,
         },{
           params:{
             userAccessKey: context.state.userAccessKey
           }
         })
         .then((res)=>{
-          context.commit('resetCart');
+          context.commit('resetLocalCart');
           context.commit('updateOrderInfo', res.data);
           router.push({name:'orderInfo', params: {id: res.data.id}});//перейти на стр оформленного заказа передавая id
         })
@@ -111,6 +117,36 @@ export default new Vuex.Store({
         router.push({name:'notFound'});
       })
     },
+    loadDeliveries(context){
+      return axios
+        .get(`${API_BASE_URL}/api/deliveries`, {
+
+          })
+        .then((res)=>{
+          context.state.deliveries =  res.data
+        })
+        .catch((err)=>{
+          console.log('error from actions loadDeliveries:',err);
+        })
+    },
+    loadPayments(context,payload){
+      console.log('loadPayments', payload.id)
+      return axios
+        .get(`${API_BASE_URL}/api/payments`, {
+          params: {
+            deliveryTypeId:payload.id
+          },
+        })
+        .then((res)=>{
+          // console.log('res.data', res.data)
+          context.state.payments = res.data
+          // context.commit('updatePayments', res.data)
+          // console.log('state.payments', context.state.payments)
+        })
+        .catch((err)=>{
+          console.log('error from actions loadPayments:',err);
+        })
+    },
     loadCart(context){//в контексте прилетают те же методы что и у глоб хранилища 'new Vuex.Store' например context.commit.
       context.commit('updateIsCartLoading', true);
       return axios//лучше всегда возвращать axios, хороший тон.
@@ -120,12 +156,13 @@ export default new Vuex.Store({
           },
         })
         .then(res => {
-          if(!context.state.userAccessKey){//если в сторе еще нет ключа то...
-            localStorage.setItem('userAccessKey', res.data.user.accessKey);//записываем его в локал для дальн использования
-            context.commit('updateUserAccessKey',res.data.user.accessKey);//мутируем. Первая загрузка и установка ключа в стейт. И при последующих запросах сохраненный ключ передается через context. При закрытой вкладке все удаляется, поэтому доп-но использ localStorage.
-          }
-          context.commit('updateCartData', res.data.items);//обновляем корзину мутацией...
-          context.commit('syncCartProducts');//...и затем, после синхронного обновления корзины, переписываем приходящ данные под свой формат.
+          // console.log('load cart from server:',res)
+            if(!context.state.userAccessKey){//если в сторе еще нет ключа то...
+              localStorage.setItem('userAccessKey', res.data.user.accessKey);//...записываем его в локал для дальн использования...
+              context.commit('updateUserAccessKey',res.data.user.accessKey);//...и мутируем. Первая загрузка и установка ключа в стейт. И при последующих запросах сохраненный ключ передается через context. При закрытой вкладке все удаляется, поэтому доп-но использ localStorage.
+            }
+            context.commit('updateCartData', res.data.items);//обновляем корзину мутацией...
+            context.commit('syncCartProducts');//...и затем, после синхронного обновления корзины, переписываем приходящ данные под свой формат.
         })
         .catch(()=>{
           context.commit('updateIsCartLoadingFailed', true);
@@ -133,16 +170,16 @@ export default new Vuex.Store({
         .then(()=>context.commit('updateIsCartLoading', false))
     },
     addProductToCart(context, {offerId,amount,colorId}){//2м арг добавляется как и в мутации payload.
-      return (new Promise(resolve => setTimeout(resolve,2000)))//обертка для любого action с исскусств задержкой (чтобы посмореть статусы отправки, для дебага)
+      return (new Promise(resolve => setTimeout(resolve,2000)))//искуств предействие для любого action (исскусств задержка чтобы посмореть статусы отправки, для дебага)
         .then(()=>{
           return axios//не просто действие axios а с возвратом чтобы потом передать новости о статусе в <ProductPage>.
             .post(`${API_BASE_URL}/api/baskets/products`, {
               productOfferId: offerId,//нужные данные кот просит сервер
-              quantity : amount,//нужные данные кот просит сервер
               colorId: colorId,
+              quantity : amount,//нужные данные кот просит сервер
             },{
               params:{
-                userAccessKey: '0e23c5d0eafb489236bc4b5e72c79ed6'
+                userAccessKey: context.state.userAccessKey//при рендере Арр создано новое или взятое с локала.
               }
             })
             .then(res => {//в ответ приходит обновленная вся корзина
@@ -172,7 +209,7 @@ export default new Vuex.Store({
       return axios
         .delete(`${API_BASE_URL}/api/baskets/products`, {
           data:{
-            productId: productId,
+            basketItemId: productId,
           },
           params:{
             userAccessKey: context.state.userAccessKey
@@ -190,7 +227,7 @@ export default new Vuex.Store({
       }
       return axios
         .put(`${API_BASE_URL}/api/baskets/products`, {
-          productId: productId,
+          basketItemId: productId,
           quantity : amount,
         },{
           params:{
@@ -206,20 +243,23 @@ export default new Vuex.Store({
 
     },
     loadProductsAction(context, payload){
-      return axios.get(`${API_BASE_URL}/api/products`, {
-        params:  {//апи просит эти параметры.
-          categoryId: payload.categoryId,
-          colorId: payload.colorId,
-          props:payload.props,
-          page: payload.page,
-          limit: payload.limit,
-          minPrice: payload.minPrice,
-          maxPrice: payload.maxPrice,
-        }
-      })
-    },
-    loadProductAction(context, {productId}) {//запрос на итем
-      return axios.get(`${API_BASE_URL}/api/products/${productId}`)
+      if(payload.productId){
+        console.log('axios productId:',payload.productId)
+        return axios.get(`${API_BASE_URL}/api/products/${payload.productId}`)
+      }else{
+        console.log('axios all')
+        return axios.get(`${API_BASE_URL}/api/products`, {
+          params:  {//апи просит эти параметры.
+            categoryId: payload.categoryId,
+            colorId: payload.colorId,
+            // 'props[length]':'1 метр',
+            page: payload.page,
+            limit: payload.limit,
+            minPrice: payload.minPrice,
+            maxPrice: payload.maxPrice,
+          }
+        })
+      }
     },
   },
   modules:{

@@ -11,7 +11,7 @@
         8 800 600 90 09
       </a>
 
-<!--      <CartIndicator/>-->
+      <CartIndicator/>
 
     </div>
   </header>
@@ -21,7 +21,7 @@
   import CartIndicator from "./cart/CartIndicator";
 
   export default {
-    components: {CartIndicator}
+    components: {CartIndicator},
   };
 </script>
 

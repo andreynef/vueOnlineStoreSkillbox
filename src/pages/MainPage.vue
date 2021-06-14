@@ -5,11 +5,11 @@
         Каталог
       </h1>
       <span class="content__info">
-        {{countProducts}} товара
+        {{countProducts}} товар{{incline}}
       </span>
     </div>
     <div class="content__catalog">
-      <ProductFilter v-bind.sync="filter"/><!--передача пропа как обьекта без предоставления его названия + sync-->
+      <ProductFilter v-bind.sync="filter"/><!--передача обьектного пропа без названия + sync-->
       <section class="catalog">
         <div style="margin: 0 auto">
           <Loader v-if="productsLoading"/>
@@ -34,6 +34,7 @@
   import ProductFilter from "../components/product/ProductFilter";
   import Loader from "../components/common/Loader";
   import {mapActions} from "vuex";
+  import declOfNum from "../helpers/declOfNum";
 
   export default {
     components: {
@@ -135,14 +136,18 @@
     },
     computed: {//не все товары а только часть, поэтому не просто стейт а компутед.
       products() {
+        console.log('computing products:', this.productsData ? this.productsData.items : [])
         return this.productsData ? this.productsData.items : [];
       },
       countProducts() {
         return this.productsData ? this.productsData.pagination.total : 0;//общее число товаров берем из лок стейта productsData (загруженного с сервера при created) обьекта с товарами.
       },
+      incline(){
+        return declOfNum(this.countProducts, ['', 'а', 'ов'])
+      }
     },
     methods: {
-      ...mapActions(['loadProductsAction', 'loadCart']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
+      ...mapActions(['loadProductsAction']),//передаем метод добавления товара стору чтобы он через аксиос послал запрос и записал в свой стор нов данные.
       loadProducts(){//запрос на сервер с данными из стейта.
         this.productsLoading=true;
         this.productsLoadingFailed=false;
@@ -175,7 +180,7 @@
       },
     },
     created(){// componentDidMount.
-      this.loadProducts();
+        this.loadProducts();
     }
   };
 </script>

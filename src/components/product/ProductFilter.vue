@@ -1,38 +1,39 @@
 <template>
   <aside class="filter">
     <h2 class="filter__title">Фильтры</h2>
-    <form class="filter__form form" action="#" method="get" @submit.prevent="submit">
-      <BaseFilterField title="Цена:">
-        <label class="form__label form__label--price">
-          <input class="form__input" type="text" name="min-price" v-model.number="current.priceFrom">
-          <span class="form__value">От</span>
-        </label>
-        <label class="form__label form__label--price">
-          <input class="form__input" type="text" name="max-price" v-model.number="current.priceTo">
-          <span class="form__value">До</span>
-        </label>
-      </BaseFilterField>
-      <BaseFilterField title="Категория:" :error="error.category">
-        <label class="form__label form__label--select">
-          <select class="form__select" type="text" name="category" v-model.number="current.categoryId">
-            <option :value="category.id" v-for="category in computedCategories" :key="category.id">{{category.title}}</option>
-          </select>
-        </label>
-      </BaseFilterField>
-      <BaseFilterField title="Цвет:" :error="error.price">
-        <ColorList :colors-arr="computedColors" title="Цвет:" :picked-color-id.sync="current.colorId"/>
-      </BaseFilterField>
-      <BaseFilterField title="Объем в ГБ:" :error="error.memory">
-        --list of Gb--
-      </BaseFilterField>
+<!--    <form class="filter__form form" action="#" method="get" @submit.prevent="submit">-->
+<!--      <BaseFilterField title="Цена:" label-class="form__label&#45;&#45;price">-->
+<!--        <label class="form__label form__label&#45;&#45;price">-->
+<!--          <input class="form__input" type="text" name="min-price" v-model.number="current.priceFrom">-->
+<!--          <span class="form__value">От</span>-->
+<!--        </label>-->
+<!--        <label class="form__label form__label&#45;&#45;price">-->
+<!--          <input class="form__input" type="text" name="max-price" v-model.number="current.priceTo">-->
+<!--          <span class="form__value">До</span>-->
+<!--        </label>-->
+<!--      </BaseFilterField>-->
+<!--      <BaseFilterField title="Категория:" :error="error.category">-->
+<!--        <label class="form__label form__label&#45;&#45;select">-->
+<!--          <select class="form__select" type="text" name="category" v-model.number="current.categoryId">-->
+<!--            <option :value="category.id" v-for="category in computedCategories" :key="category.id">{{category.title}}</option>-->
+<!--          </select>-->
+<!--        </label>-->
+<!--      </BaseFilterField>-->
+<!--      <BaseFilterField title="Цвет:" :error="error.price">-->
+<!--        <ColorList :colors-arr="computedColors" title="Цвет:" :picked-color-id.sync="current.colorId"/>-->
+<!--      </BaseFilterField>-->
+<!--      <BaseFilterField title="Объем в ГБ:" :error="error.memory">-->
+<!--        list of gb-->
+<!--      </BaseFilterField>-->
 
-      <button class="filter__submit button button--primery" type="submit">
-        Применить
-      </button>
-      <button class="filter__reset button button--second" type="button" @click.prevent="reset">
-        Сбросить
-      </button>
-    </form>
+<!--      <button class="filter__submit button button&#45;&#45;primery" type="submit">-->
+<!--        Применить-->
+<!--      </button>-->
+<!--      <button class="filter__reset button button&#45;&#45;second" type="button" @click.prevent="reset">-->
+<!--        Сбросить-->
+<!--      </button>-->
+<!--    </form>-->
+    <div style="height:600px">out of service</div>
   </aside>
 </template>
 
